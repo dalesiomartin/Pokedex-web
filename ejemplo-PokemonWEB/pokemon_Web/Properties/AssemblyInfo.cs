@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // La información general sobre un ensamblado se controla mediante el siguiente 
 // conjunto de atributos. Cambie los valores de estos atributos para modificar la información
 // asociada a un ensamblado.
-[assembly: AssemblyTitle("pokedex_wep")]
+[assembly: AssemblyTitle("pokemon_Web")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("pokedex_wep")]
+[assembly: AssemblyProduct("pokemon_Web")]
 [assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // El siguiente GUID sirve como ID de typelib si este proyecto se expone a COM
-[assembly: Guid("f65f0708-6558-41fe-bee9-1b6ab8ff9c09")]
+[assembly: Guid("872ee952-c544-40b4-8019-ee44c0ae355c")]
 
 // La información de versión de un ensamblado consta de los siguientes cuatro valores:
 //

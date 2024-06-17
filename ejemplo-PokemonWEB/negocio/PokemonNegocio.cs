@@ -14,8 +14,9 @@ namespace negocio
         //TENER EN CUENTA, QUE CADA CLASE, DEBE TENER SU CLASE DE METODO DE ACCESO A DATOS
 
         //ESTO ES UN FUNCION PARA LISTAR POKEMON  public List<Pokemon> listar() { }
-        public List<Pokemon> listar() { 
-        
+        public List<Pokemon> listar()
+        {
+
             List<Pokemon> lista = new List<Pokemon>();
 
             //para crear el metodo a base de dato, necesito manejo excepc
@@ -46,10 +47,10 @@ namespace negocio
             {
                 //1) cadena de conexion, copio la conexion de sql, la direccion del motor de base dato
                 //en la direcc de entorno local, puedo usar LOCAL\\SQLEXPRESS; .\\SQLEXPRESS ; DESKTOPMTM\\SQLEXPRESS
-               
+
                 //conexion.ConnectionString = "server=DESKTOPMTM\\SQLEXPRESS;database=POKEDEX_DB;Integrated Security=false;user=martin;password=martin;"; //NO FUNCIONA
                 //conexion.ConnectionString = "server=DESKTOPMTM\\SQLEXPRESS;database=POKEDEX_DB;Integrated Security=True;"; //NO FUNCIONA
-                
+
                 conexion.ConnectionString = "Data Source=DESKTOP-G8FBE6Q\\SQLEXPRESS;Initial Catalog=POKEDEX_DB;Integrated Security=True";
                 /* LA FORMA DE COMPROBACION SEGURA ES
                  * 1- PROYECTO(windform-app1), PROPIEDADES
@@ -95,7 +96,7 @@ namespace negocio
                     aux.Debilidad = new Elemento(); //porque es un objeto de tipo elemento
                     aux.Debilidad.id = (int)lector["IdDebilidad"];
                     aux.Debilidad.Descripcion = (string)lector["Debilidad"];
-                   
+
 
                     lista.Add(aux);
                 }
@@ -108,23 +109,76 @@ namespace negocio
 
                 throw ex;
             }
-            
-            
-            
-          
+
+
+
+
         }
 
 
         //ESTO ES UNA FUNCION DE AGREGAR POKEMON, por ende debe conectarse a la BD
-        public void agregar(Pokemon nuevo) 
+        public List<Pokemon> listarConSP()
+        {
+            List<Pokemon> lista = new List<Pokemon>(); // voy a usar la misma consulta de listar()
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                //a mi consulta que la traje directamente de listar, lo agrego un filtro o campo al where 
+                //string consulta = "select Numero, Nombre, p.Descripcion, UrlImagen, e.Descripcion Tipo, d.Descripcion Debilidad, p.IdTipo, p.IdDebilidad, p.Id from POKEMONS p, ELEMENTOS e, ELEMENTOS d where p.IdTipo=e.Id  and p.IdDebilidad=d.Id and p.Activo=1 and ";
+                //datos.setearConsulta(consulta);
+                datos.setearProcedimiento("storedListar");
+
+                datos.ejecutarLectura();
+
+                //4) lectura del lector
+                while (datos.Lector.Read())
+                {
+                    Pokemon aux = new Pokemon();
+                    aux.Id = (int)datos.Lector["Id"];
+                    aux.Numero = datos.Lector.GetInt32(0); //el int32, ver tipo dato en la tabla y lleva cero por el orden
+                    aux.Nombre = (string)datos.Lector["Nombre"];
+                    aux.Descripcion = (string)datos.Lector["Descripcion"];
+
+                    if (!(datos.Lector["UrlImagen"] is DBNull))
+                        aux.UrlImagen = (string)datos.Lector["UrlImagen"];
+
+
+                    aux.Tipo = new Elemento();
+                    aux.Tipo.id = (int)datos.Lector["IdTipo"];
+                    aux.Tipo.Descripcion = (string)datos.Lector["Tipo"];
+
+                    aux.Debilidad = new Elemento(); //porque es un objeto de tipo elemento
+                    aux.Debilidad.id = (int)datos.Lector["IdDebilidad"];
+                    aux.Debilidad.Descripcion = (string)datos.Lector["Debilidad"];
+
+
+                    lista.Add(aux);
+                }
+
+
+
+
+                return lista;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+
+        }
+
+
+        public void agregar(Pokemon nuevo)
         {   // aca necesito conectarme a la base de datos, mediante una clase de acceso a BD
             AccesoDatos datos = new AccesoDatos(); //con esto ya puedo conectarme
-            // NECESITO UNA LISTA PARA DEVOLVER?? NOOO, PORQUE NO DEVUELVE REGISTRO, LOS VA A INSERTAR
+                                                   // NECESITO UNA LISTA PARA DEVOLVER?? NOOO, PORQUE NO DEVUELVE REGISTRO, LOS VA A INSERTAR
 
             try
             { //Debo setear la consulta
               //OJO, las "" son para C# y las '' son para SQL
-               // datos.setearConsulta(" insert into POKEMONS (Numero,Nombre, Descripcion,Activo) values (" + nuevo.Numero + ",' " + nuevo.Nombre + "',' " + nuevo.Descripcion + "',1)");
+              // datos.setearConsulta(" insert into POKEMONS (Numero,Nombre, Descripcion,Activo) values (" + nuevo.Numero + ",' " + nuevo.Nombre + "',' " + nuevo.Descripcion + "',1)");
                 datos.setearConsulta(" insert into POKEMONS (Numero,Nombre, Descripcion,Activo, IdTipo, IdDebilidad, UrlImagen) values (" + nuevo.Numero + ",' " + nuevo.Nombre + "',' " + nuevo.Descripcion + "',1, @IdTipo, @IdDebilidad, @UrlImagen)");
                 //con @IdTipo, @IdDebilidad estoy creando una especie de variable pero se llaman PARAMETROS
                 // Y se los debo agregar al comando, pero no puedo hacerlo directam porq tengo el metodo encapsulado
@@ -156,11 +210,11 @@ namespace negocio
             finally
             {
                 datos.cerrarConexion();
-            }    
+            }
 
         }
 
-        public void modificar(Pokemon poke) 
+        public void modificar(Pokemon poke)
         {
             AccesoDatos datos = new AccesoDatos();
             try
@@ -182,12 +236,13 @@ namespace negocio
 
                 throw ex;
             }
-            finally {
+            finally
+            {
                 datos.cerrarConexion();
             }
         }
 
-        public void eliminar(int id) 
+        public void eliminar(int id)
         {
             try
             {
@@ -201,10 +256,11 @@ namespace negocio
             {
 
                 throw ex;
-            }        
+            }
         }
 
-        public void eliminarLogico(int id) {
+        public void eliminarLogico(int id)
+        {
             //en este caso no eliminare el registro, solo ACTUALIZARE el estado del mismo
             try
             {
@@ -220,7 +276,7 @@ namespace negocio
             {
                 throw ex;
             }
-        
+
         }
 
         public List<Pokemon> filtrar(string campo, string criterio, string filtro)
@@ -265,7 +321,7 @@ namespace negocio
 
                 }
                 else
-                { 
+                {
                     switch (criterio)
                     {
                         case "Empieza con":
@@ -281,8 +337,8 @@ namespace negocio
 
                 }
 
-                    datos.setearConsulta(consulta);
-                    datos.ejecutarLectura();
+                datos.setearConsulta(consulta);
+                datos.ejecutarLectura();
 
                 //4) lectura del lector
                 while (datos.Lector.Read())
@@ -296,7 +352,7 @@ namespace negocio
                     if (!(datos.Lector["UrlImagen"] is DBNull))
                         aux.UrlImagen = (string)datos.Lector["UrlImagen"];
 
-                   
+
                     aux.Tipo = new Elemento();
                     aux.Tipo.id = (int)datos.Lector["IdTipo"];
                     aux.Tipo.Descripcion = (string)datos.Lector["Tipo"];
@@ -324,3 +380,4 @@ namespace negocio
         }
     }
 }
+
