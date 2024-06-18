@@ -179,7 +179,7 @@ namespace negocio
             { //Debo setear la consulta
               //OJO, las "" son para C# y las '' son para SQL
               // datos.setearConsulta(" insert into POKEMONS (Numero,Nombre, Descripcion,Activo) values (" + nuevo.Numero + ",' " + nuevo.Nombre + "',' " + nuevo.Descripcion + "',1)");
-                datos.setearConsulta(" insert into POKEMONS (Numero,Nombre, Descripcion,Activo, IdTipo, IdDebilidad, UrlImagen) values (" + nuevo.Numero + ",' " + nuevo.Nombre + "',' " + nuevo.Descripcion + "',1, @IdTipo, @IdDebilidad, @UrlImagen)");
+                datos.setearConsulta(" insert into POKEMONS (Numero,Nombre, Descripcion,Activo, IdTipo, IdDebilidad, UrlImagen) values (" + nuevo.Numero + ",'" + nuevo.Nombre + "','" + nuevo.Descripcion + "',1, @IdTipo, @IdDebilidad, @UrlImagen)");
                 //con @IdTipo, @IdDebilidad estoy creando una especie de variable pero se llaman PARAMETROS
                 // Y se los debo agregar al comando, pero no puedo hacerlo directam porq tengo el metodo encapsulado
                 // entonces voy a AccesoDatos, y creo un Public void setearParametros
@@ -201,6 +201,37 @@ namespace negocio
                 // falla y no carga la linea en el programa, En SQL, lo veo con los null en los campos vacios
                 //por el momento la aplic no admite null y falla. Por el momento para que funciones, a los campos que deben ir datos
                 // le cargaremos datos vacio con ''.
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+
+        }
+
+        public void agregarConSP(Pokemon nuevo)
+        {  
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearProcedimiento("storedAltaPokemon");
+               
+                datos.setearParametro("@numero", nuevo.Numero);
+                datos.setearParametro("@nombre", nuevo.Nombre);
+                datos.setearParametro("@desc", nuevo.Descripcion);
+                datos.setearParametro("@img", nuevo.UrlImagen);
+                datos.setearParametro("@idTipo", nuevo.Tipo.id);
+                datos.setearParametro("@idDebilidad", nuevo.Debilidad.id);
+                //datos.setearParametro("@idEvolucion", nuevo.Descripcion);
+
+                datos.ejecutarAccion();
+                
             }
             catch (Exception ex)
             {

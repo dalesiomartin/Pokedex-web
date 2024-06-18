@@ -6,7 +6,7 @@
 
     <div class="row">
         <div class="col-6">
-
+            <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
             <div class="mb-3">
                 <label for="txtId" class="form-label">Id</label>
                 <asp:TextBox ID="txtId" runat="server" CssClass="form-control"></asp:TextBox>
@@ -46,21 +46,22 @@
                 <label for="txtDescripcion" class="form-label">Descripción:</label>
                 <asp:TextBox ID="txtDescripcion" runat="server" CssClass="form-control" TextMode="MultiLine"></asp:TextBox>
             </div>
-         
+
+
             <asp:UpdatePanel ID="UpdatePanel1" runat="server">
                 <ContentTemplate>
                     <div class="mb-3">
-                        <label for="txtImagenUrl" class="form-label">Url Imagen:</label>
+                        <label for="txtImagenUrl" class="form-label">Url Imagen</label>
                         <asp:TextBox ID="txtImagenUrl" runat="server" CssClass="form-control"
                             AutoPostBack="true" OnTextChanged="txtImagenUrl_TextChanged"></asp:TextBox>
                     </div>
-                    <asp:Image ImageUrl="https://t4.ftcdn.net/jpg/03/81/77/59/240_F_381775928_q3ZHINFQQGkiysV1TTrXiEYDD6IolIRR.jpg" 
+                    <asp:Image ImageUrl="https://t4.ftcdn.net/jpg/05/97/47/95/240_F_597479556_7bbQ7t4Z8k3xbAloHFHVdZIizWK1PdOo.jpg"
                         ID="imgPokemon" runat="server" Width="60%" />
                 </ContentTemplate>
             </asp:UpdatePanel>
 
-        </div>
 
+        </div>
 
     </div>
 
