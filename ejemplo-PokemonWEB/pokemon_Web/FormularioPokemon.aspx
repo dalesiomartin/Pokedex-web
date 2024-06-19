@@ -59,12 +59,26 @@
                         ID="imgPokemon" runat="server" Width="60%" />
                 </ContentTemplate>
             </asp:UpdatePanel>
-
-
         </div>
 
-    </div>
+        <div class="row">
+            <div class="col-6">
 
+                <asp:UpdatePanel ID="UpdatePanel2" runat="server">
+                    <ContentTemplate>
+                        <asp:Button ID="btnEliminar" runat="server" OnClick="btnEliminar_Click" CssClass="btn btn-danger" Text="Eliminar" />
+                        </div>
 
+            <% if (ConfirmaEliminacion)
+                {%>
+                        <div class="mb-3">
+                            <asp:CheckBox Text="Confirmar Eliminacion" ID="chkConfirmaEliminacion" runat="server" />
+                            <asp:Button ID="ConfirmaEliminar" runat="server"  OnClick="ConfirmaEliminar_Click" CssClass="btn btn-outline-danger" Text="Eliminar" />
+                        </div>
+                        </div>
+              <% }%>
+                    </ContentTemplate>
+                </asp:UpdatePanel>
 
+            </div>
 </asp:Content>

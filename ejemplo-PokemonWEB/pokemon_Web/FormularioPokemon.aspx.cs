@@ -11,11 +11,15 @@ namespace pokemon_Web
 {
     public partial class WebForm1 : System.Web.UI.Page
     {
+        public bool ConfirmaEliminacion { get; set; }
         protected void Page_Load(object sender, EventArgs e)
         {
-           txtId.Enabled = false;
+            txtId.Enabled = false;
+            ConfirmaEliminacion = false;
+
             try
             {
+                //CONFIGURACION INICIAL DE LA PANTALLA
                 if (!IsPostBack)
                 {
                     ElementoNegocio negocio = new ElementoNegocio();
@@ -31,6 +35,35 @@ namespace pokemon_Web
                     ddlDebilidad.DataBind();
 
                 }
+
+                //CONFIGURACION SI ESTAMOS MODIFICANDO
+                //aplico un operador ternario
+                string id = Request.QueryString["id"] != null ? Request.QueryString["id"].ToString() : "";
+                if (id != "" && !IsPostBack)
+                {
+                    PokemonNegocio negocio = new PokemonNegocio();
+                    //List<Pokemon> lista = negocio.listar(id); //  esto devuelve una lista
+                    //Pokemon seleccionado = lista[0]; //tomo el primer elemento de la lista
+                    //simplifico las lineas anteriores por esta
+                    Pokemon seleccionado = (negocio.listar(id))[0];
+
+                    //precargar los campos
+                    txtId.Text = id;
+                    txtNombre.Text = seleccionado.Nombre;
+                    txtDescripcion.Text = seleccionado.Descripcion;
+                    txtImagenUrl.Text = seleccionado.UrlImagen;
+                    txtNumero.Text = seleccionado.Numero.ToString();
+
+                    //cargo los precargables
+                    ddlTipo.SelectedValue = seleccionado.Tipo.id.ToString();
+                    ddlDebilidad.SelectedValue = seleccionado.Debilidad.id.ToString();
+
+                    //para precargar la imagen por url, estoy forzando el metodo
+                    txtImagenUrl_TextChanged(sender, e); //en el escritorio, usamos el metodo cargar, para no forzar los metodos
+
+                }
+
+
             }
             catch (Exception ex)
             {
@@ -46,7 +79,7 @@ namespace pokemon_Web
             try
             {
                 Pokemon nuevo = new Pokemon();//creo un nuevo objeto tipo pokemon
-                
+
                 nuevo.Numero = int.Parse(txtNumero.Text);
                 nuevo.Nombre = txtNombre.Text;
                 nuevo.Descripcion = txtDescripcion.Text;
@@ -59,8 +92,19 @@ namespace pokemon_Web
                 nuevo.Debilidad.id = int.Parse(ddlDebilidad.SelectedValue);
 
                 PokemonNegocio negocio = new PokemonNegocio(); //agrego otro objeto para cargar el pokemon
-                negocio.agregarConSP(nuevo);
-                Response.Redirect("PokemonsLista.aspx",false);
+                                                               //lo ideal que esto este arriba, debajo de pokemon nuevo
+
+                if (Request.QueryString["id"] != null)
+                {
+                    nuevo.Id = int.Parse(txtId.Text); //FUNDAMENTAL CARGAR EL ID, SINO NO ME MODIF NADA
+                    negocio.modificarConSP(nuevo);
+                }
+                else
+                {
+                    negocio.agregarConSP(nuevo);
+                }
+
+                Response.Redirect("PokemonsLista.aspx", false);
 
 
             }
@@ -74,6 +118,30 @@ namespace pokemon_Web
         protected void txtImagenUrl_TextChanged(object sender, EventArgs e)
         {
             imgPokemon.ImageUrl = txtImagenUrl.Text;
+        }
+
+        protected void btnEliminar_Click(object sender, EventArgs e)
+        {
+            ConfirmaEliminacion= true;
+        }
+
+        protected void ConfirmaEliminar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (chkConfirmaEliminacion.Checked)
+                {
+                    PokemonNegocio negocio = new PokemonNegocio();
+                    negocio.eliminar(int.Parse(txtId.Text));
+                    Response.Redirect("PokemonsLista.aspx");
+                }
+            }
+                
+            catch (Exception ex)
+            {
+                Session.Add("error", ex);
+                throw;
+            }
         }
     }
 }
