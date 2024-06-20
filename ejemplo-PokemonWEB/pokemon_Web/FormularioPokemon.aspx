@@ -37,6 +37,8 @@
             <div class="mb-3">
                 <asp:Button ID="btnAceptar" runat="server" CssClass="btn btn-primary" OnClick="btnAceptar_Click" Text="Aceptar" />
                 <a href="PokemonsLista.aspx">Cancelar</a>
+                <asp:Button Text="Inactivar" ID="btnInactivar" OnClick="btnInactivar_Click" CssClass="btn btn-warning" runat="server" />
+
             </div>
 
         </div>

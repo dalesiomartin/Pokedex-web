@@ -14,7 +14,7 @@ namespace negocio
         //TENER EN CUENTA, QUE CADA CLASE, DEBE TENER SU CLASE DE METODO DE ACCESO A DATOS
 
         //ESTO ES UN FUNCION PARA LISTAR POKEMON  public List<Pokemon> listar() { }
-        public List<Pokemon> listar(string id="") //le mando un parametro opcional
+        public List<Pokemon> listar(string id = "") //le mando un parametro opcional
         {
 
             List<Pokemon> lista = new List<Pokemon>();
@@ -62,12 +62,12 @@ namespace negocio
 
                 //2) comando
                 comando.CommandType = System.Data.CommandType.Text;
-                comando.CommandText = "select Numero, Nombre, p.Descripcion, UrlImagen, e.Descripcion Tipo, d.Descripcion Debilidad, p.IdTipo, p.IdDebilidad, p.Id from POKEMONS p, ELEMENTOS e, ELEMENTOS d where p.IdTipo=e.Id  and p.IdDebilidad=d.Id and p.Activo=1 ";
+                comando.CommandText = "select Numero, Nombre, p.Descripcion, UrlImagen, e.Descripcion Tipo, d.Descripcion Debilidad, p.IdTipo, p.IdDebilidad, p.Id, p.Activo from POKEMONS p, ELEMENTOS e, ELEMENTOS d where p.IdTipo=e.Id  and p.IdDebilidad=d.Id  ";
                 if (id != null)
                 {
                     comando.CommandText += "and P.Id= " + id;
                 }
-                
+
                 comando.Connection = conexion;
 
                 //3) abro la conexion
@@ -101,6 +101,8 @@ namespace negocio
                     aux.Debilidad = new Elemento(); //porque es un objeto de tipo elemento
                     aux.Debilidad.id = (int)lector["IdDebilidad"];
                     aux.Debilidad.Descripcion = (string)lector["Debilidad"];
+
+                    aux.Activo = bool.Parse(lector["Activo"].ToString());
 
 
                     lista.Add(aux);
@@ -156,6 +158,7 @@ namespace negocio
                     aux.Debilidad.id = (int)datos.Lector["IdDebilidad"];
                     aux.Debilidad.Descripcion = (string)datos.Lector["Debilidad"];
 
+                    aux.Activo = bool.Parse(datos.Lector["Activo"].ToString());
 
                     lista.Add(aux);
                 }
@@ -220,13 +223,13 @@ namespace negocio
         }
 
         public void agregarConSP(Pokemon nuevo)
-        {  
+        {
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
                 datos.setearProcedimiento("storedAltaPokemon");
-               
+
                 datos.setearParametro("@numero", nuevo.Numero);
                 datos.setearParametro("@nombre", nuevo.Nombre);
                 datos.setearParametro("@desc", nuevo.Descripcion);
@@ -236,7 +239,7 @@ namespace negocio
                 //datos.setearParametro("@idEvolucion", nuevo.Descripcion);
 
                 datos.ejecutarAccion();
-                
+
             }
             catch (Exception ex)
             {
@@ -324,17 +327,17 @@ namespace negocio
             }
         }
 
-        public void eliminarLogico(int id)
+        public void eliminarLogico(int id, bool activo = false)
         {
             //en este caso no eliminare el registro, solo ACTUALIZARE el estado del mismo
             try
             {
                 AccesoDatos datos = new AccesoDatos();
 
-                datos.setearConsulta("update POKEMONS set Activo=0 where id=@id;");
+                datos.setearConsulta("update POKEMONS set Activo= @activo where id=@id;");
                 datos.setearParametro("@id", id);
+                datos.setearParametro("@activo", activo);
                 datos.ejecutarAccion();
-
 
             }
             catch (Exception ex)

@@ -47,6 +47,9 @@ namespace pokemon_Web
                     //simplifico las lineas anteriores por esta
                     Pokemon seleccionado = (negocio.listar(id))[0];
 
+                    //guardo el pokemon seleccionado en session
+                    Session.Add("pokeseleccionado", seleccionado);
+
                     //precargar los campos
                     txtId.Text = id;
                     txtNombre.Text = seleccionado.Nombre;
@@ -61,9 +64,16 @@ namespace pokemon_Web
                     //para precargar la imagen por url, estoy forzando el metodo
                     txtImagenUrl_TextChanged(sender, e); //en el escritorio, usamos el metodo cargar, para no forzar los metodos
 
+
+                    //CONFIG ACCIONES
+                    if (!seleccionado.Activo)
+                    {
+                        btnInactivar.Text = "Reactivar";
+                    }
+
                 }
 
-
+               
             }
             catch (Exception ex)
             {
@@ -141,6 +151,25 @@ namespace pokemon_Web
             {
                 Session.Add("error", ex);
                 throw;
+            }
+        }
+
+        protected void btnInactivar_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                PokemonNegocio negocio = new PokemonNegocio();
+                Pokemon seleccionado = (Pokemon)Session["pokeseleccionado"];
+
+                //negocio.eliminarLogico(int.Parse(txtId.Text)); // voy a modificar el parametro
+                negocio.eliminarLogico(seleccionado.Id, !seleccionado.Activo); //toma el pokemon(id) y manda el estado opuesto (!activo)
+                //caso de las banderas, en este caso quiero negar el estado del pokemon
+                Response.Redirect("PokemonsLista.aspx");
+            }
+            catch (Exception ex)
+            {
+
+                Session.Add("error", ex);
             }
         }
     }

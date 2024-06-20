@@ -24,7 +24,9 @@ namespace dominio //viene con namespace winform_app1 y se lo cambiamos a dominio
 
         public Elemento Debilidad { get; set; }
 
-     
+        public bool Activo { get; set; }
+
+
         //para conectarme a la base de dato, necesito otra clase
     }
 }
